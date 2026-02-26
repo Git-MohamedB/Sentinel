@@ -1,0 +1,2 @@
+# Dépendances du Sentinel
+requests>=2.28.0

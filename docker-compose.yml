@@ -1,0 +1,39 @@
+services:
+  # ====================================================
+  # Service Nginx — Serveur Web Vulnérable (Honey Pot)
+  # ====================================================
+  nginx:
+    image: nginx:alpine
+    container_name: sentinel_nginx
+    ports:
+      - "9090:80"
+    volumes:
+      - ./logs:/var/log/nginx
+    networks:
+      - sentinel_net
+    restart: unless-stopped
+
+  # ====================================================
+  # Service Sentinel — Script de Détection d'Intrusions
+  # ====================================================
+  sentinel:
+    build: ./sentinel
+    container_name: sentinel_ids
+    depends_on:
+      - nginx
+    volumes:
+      - ./logs:/logs:ro
+      - ./sentinel:/app/data
+    networks:
+      - sentinel_net
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    environment:
+      - OLLAMA_HOST=http://host.docker.internal:11434
+      - LOG_FILE=/logs/access.log
+      - BANNED_FILE=/app/data/banned_ips.txt
+    restart: unless-stopped
+
+networks:
+  sentinel_net:
+    driver: bridge
