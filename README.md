@@ -1,4 +1,4 @@
-# Titre du projet : Sentinel Réseau — IDS avec IA Locale
+# Titre du projet : Sentinel Réseau - IDS avec IA Locale
 
 ## Description
 Système de Détection d'Intrusions (IDS) de nouvelle génération. En combinant un honeypot classique avec l'analyse sémantique puissante d'une intelligence artificielle locale (**Ollama / Llama 3**), Sentinel identifie, qualifie et bloque de manière autonome les requêtes malveillantes en temps réel, le tout dans un environnement Dockerisé.
@@ -24,6 +24,11 @@ graph TD
 - **Nginx (Honeypot)** : Serveur web cible exposant des logs d'accès.
 - **Sentinel (Python)** : Script modulaire qui surveille les logs, filtre les requêtes suspectes et interroge l'IA.
 - **Ollama** : Moteur d'IA local (tournant sur l'hôte) pour valider les menaces.
+
+### Affichage de résultats
+
+![Test](images/.png)
+
 
 ## Installation et Lancement
 
