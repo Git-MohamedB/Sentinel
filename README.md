@@ -28,7 +28,7 @@ graph TD
 ### Affichage de résultats
 
 ![terminal1](screenshots/terminal1.png)
-![terminal2](screenshots/terminal12png)
+![terminal2](screenshots/terminal2png)
 
 ## Installation et Lancement
 
