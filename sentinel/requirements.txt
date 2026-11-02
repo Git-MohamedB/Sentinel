@@ -1,2 +1,2 @@
 # Dépendances du Sentinel
-requests>=2.28.0
+requests==2.32.3

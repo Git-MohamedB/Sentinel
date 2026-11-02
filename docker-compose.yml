@@ -6,11 +6,15 @@ services:
     image: nginx:alpine
     container_name: sentinel_nginx
     ports:
-      - "9090:80"
+      - "${HONEYPOT_BIND_IP:-127.0.0.1}:9090:80"
     volumes:
       - ./logs:/var/log/nginx
     networks:
       - sentinel_net
+    mem_limit: 256m
+    cpus: 0.5
+    security_opt:
+      - "no-new-privileges:true"
     restart: unless-stopped
 
   # ====================================================
@@ -23,7 +27,7 @@ services:
       - nginx
     volumes:
       - ./logs:/logs:ro
-      - ./sentinel:/app/data
+      - ./sentinel/banned_ips.txt:/app/data/banned_ips.txt:rw
     networks:
       - sentinel_net
     extra_hosts:
@@ -32,6 +36,15 @@ services:
       - OLLAMA_HOST=http://host.docker.internal:11434
       - LOG_FILE=/logs/access.log
       - BANNED_FILE=/app/data/banned_ips.txt
+    mem_limit: 512m
+    cpus: 1.0
+    read_only: true
+    tmpfs:
+      - "/tmp:size=32m,mode=1777"
+    cap_drop:
+      - ALL
+    security_opt:
+      - "no-new-privileges:true"
     restart: unless-stopped
 
 networks:
