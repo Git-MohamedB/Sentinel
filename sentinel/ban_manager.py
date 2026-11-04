@@ -21,12 +21,14 @@ class GestionnaireBannissement:
                 with open(self._fichier, "r", encoding="utf-8") as f:
                     for ligne in f:
                         ip = ligne.split("|")[0].strip()
-                        if ip: self._ips_bannies.add(ip)
+                        if ip:
+                            self._ips_bannies.add(ip)
             except Exception as e:
                 logger.warning(f"Erreur lecture fichier banni : {e}")
 
     def ban_ip(self, ip: str, raison: str = "Détectée par l'IA"):
-        if ip in self._ips_bannies: return
+        if ip in self._ips_bannies:
+            return
 
         timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         enregistrement = f"{ip} | {timestamp} | {raison}"
@@ -35,7 +37,10 @@ class GestionnaireBannissement:
             with open(self._fichier, "a", encoding="utf-8") as f:
                 f.write(enregistrement + "\n")
             self._ips_bannies.add(ip)
-            logger.warning(f"[BANNI] IP BANNIE : {enregistrement}")
+            logger.warning(
+                f"[BANNI] IP BANNIE : {enregistrement}",
+                extra={"event": "ip_banned", "ip": ip, "reason": raison},
+            )
         except Exception as e:
             logger.error(f"Erreur écriture fichier banni : {e}")
 

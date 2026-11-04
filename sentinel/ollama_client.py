@@ -1,8 +1,11 @@
-import os
-import requests
 import logging
+import os
+import time
+
+import requests
 
 logger = logging.getLogger("Sentinel.Ollama")
+
 
 class ClientOllama:
     """
@@ -34,15 +37,38 @@ class ClientOllama:
             "options": {"temperature": 0.0, "num_predict": 10},
         }
 
+        start = time.perf_counter()
         try:
             reponse = requests.post(self._url_api, json=payload, timeout=self._timeout)
             reponse.raise_for_status()
             verdict = reponse.json().get("response", "").strip().upper()
+            elapsed_ms = round((time.perf_counter() - start) * 1000, 1)
 
-            if "MENACE" in verdict: return "MENACE"
-            if "SAFE" in verdict: return "SAFE"
-            return "MENACE"
+            if "MENACE" in verdict:
+                resultat = "MENACE"
+            elif "SAFE" in verdict:
+                resultat = "SAFE"
+            else:
+                resultat = "MENACE"
+
+            logger.info(
+                f"Analyse Ollama terminée ({resultat})",
+                extra={
+                    "event": "ollama_inference",
+                    "latency_ms": elapsed_ms,
+                    "verdict": resultat,
+                },
+            )
+            return resultat
 
         except Exception as e:
-            logger.error(f"Erreur API Ollama : {e}")
+            elapsed_ms = round((time.perf_counter() - start) * 1000, 1)
+            logger.error(
+                f"Erreur API Ollama : {e}",
+                extra={
+                    "event": "ollama_error",
+                    "latency_ms": elapsed_ms,
+                    "verdict": "ERREUR",
+                },
+            )
             return "ERREUR"
